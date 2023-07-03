@@ -714,6 +714,19 @@ class satis(Exchange, ImplicitAPI):
         response = self.privatePostPositionIsolate(
             self.extend(request, params))
         return self.parse_position(response)
+    
+    def set_risk_limit(self, symbol: str, risk_limit: float, params={}):
+        self.load_markets()
+        market = self.market(symbol)
+        risk_limit = self.currency_to_precision(market['settle'], risk_limit)
+        
+        request = {
+            'product_id': market['id'],
+            'limit': risk_limit,
+        }
+        response = self.privatePostPositionRisk(
+            self.extend(request, params))
+        return self.parse_position(response)
 
     def set_cross_margin(self, symbol: str, params={}):
         self.load_markets()
@@ -724,7 +737,7 @@ class satis(Exchange, ImplicitAPI):
         response = self.privatePostPositionCross(
             self.extend(request, params))
         return self.parse_position(response)
-
+        
     def sign_message(self, message, params={}):
         hash = self.hash(self.encode(
             "\x19Ethereum Signed Message:\n" + str(len(message)) + message), 'keccak')

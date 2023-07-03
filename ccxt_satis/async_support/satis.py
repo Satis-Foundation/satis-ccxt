@@ -715,6 +715,19 @@ class satis(Exchange, ImplicitAPI):
         response = await self.privatePostPositionIsolate(
             self.extend(request, params))
         return self.parse_position(response)
+    
+    async def set_risk_limit(self, symbol: str, risk_limit: float, params={}):
+        await self.load_markets()
+        market = self.market(symbol)
+        risk_limit = self.currency_to_precision(market['settle'], risk_limit)
+        
+        request = {
+            'product_id': market['id'],
+            'limit': float(risk_limit),
+        }
+        response = await self.privatePostPositionRisk(
+            self.extend(request, params))
+        return self.parse_position(response)
 
     async def set_cross_margin(self, symbol: str, params={}):
         await self.load_markets()

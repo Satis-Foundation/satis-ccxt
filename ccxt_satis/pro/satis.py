@@ -66,10 +66,11 @@ class satis(ccxt_satis.async_support.satis):
     def handle_ticker(self, client: Client, message):
         marketId = self.safe_string(message, 'product_id')
         market = self.safe_market(marketId)
+        symbol = market['symbol']
         messageHash = 'ticker:' + market['id']
 
         ticker = self.parse_ticker(message, market)
-        self.tickers[marketId] = ticker
+        self.tickers[symbol] = ticker
         client.resolve(ticker, messageHash)
         return message
 
